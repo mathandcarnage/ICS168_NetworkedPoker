@@ -167,7 +167,6 @@ public class GameState : MonoBehaviour {
             int[] valueCounts = new int[13];
             for(int i = 0; i < 5; i ++)
             {
-                cards[i] = c[i];
                 suit = suit & (1 << c[i].suit);
                 valueCounts[c[i].value]++;
                 for(int j = 0; j < i; j ++)
@@ -187,6 +186,7 @@ public class GameState : MonoBehaviour {
                     if (Mathf.Abs(c[i].value - c[j].value) == 12) consec++;
                 }
             }
+            int cix = 0;
             if(pair == 1)
             {
                 handType = "One Pair";
@@ -197,6 +197,14 @@ public class GameState : MonoBehaviour {
                     if(valueCounts[i] == 2)
                     {
                         testVals[1] = i;
+                        for (int n = 0; n < 5; n ++)
+                        {
+                            if(c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         break;
                     }
                 }
@@ -206,6 +214,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 1)
                     {
                         testVals[j] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         j++;
                     }
                 }
@@ -221,6 +237,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 2)
                     {
                         testVals[j] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         j++;
                     }
                 }
@@ -229,6 +253,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 1)
                     {
                         testVals[j] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         j++;
                     }
                 }
@@ -243,6 +275,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 3)
                     {
                         testVals[1] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         break;
                     }
                 }
@@ -252,6 +292,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 1)
                     {
                         testVals[j] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         j++;
                     }
                 }
@@ -266,6 +314,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 3)
                     {
                         testVals[1] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         break;
                     }
                 }
@@ -274,6 +330,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 2)
                     {
                         testVals[2] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         break;
                     }
                 }
@@ -288,6 +352,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 4)
                     {
                         testVals[1] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         break;
                     }
                 }
@@ -296,6 +368,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 1)
                     {
                         testVals[2] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         break;
                     }
                 }
@@ -310,6 +390,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 1)
                     {
                         testVals[1] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         if (i == 12 && testVals[11] == 0) testVals[1] = 5;
                     }
                 }
@@ -324,6 +412,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 1)
                     {
                         testVals[1] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         if (i == 12 && valueCounts[11] == 0) testVals[1] = 5;
                     }
                 }
@@ -339,6 +435,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 1)
                     {
                         testVals[j] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         j++;
                     }
                 }
@@ -354,6 +458,14 @@ public class GameState : MonoBehaviour {
                     if (valueCounts[i] == 1)
                     {
                         testVals[j] = i;
+                        for (int n = 0; n < 5; n++)
+                        {
+                            if (c[n].value == i)
+                            {
+                                cards[cix] = c[n];
+                                cix++;
+                            }
+                        }
                         j++;
                     }
                 }
