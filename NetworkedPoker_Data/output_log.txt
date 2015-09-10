@@ -1,0 +1,647 @@
+Initialize engine version: 5.0.1f1 (5a2e8fe35a68)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics Family (ID=0xa16)
+    Vendor:   Intel
+    VRAM:     896 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+- Completed reload, in  0.063 seconds
+desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+Initialize engine version: 5.0.1f1 (5a2e8fe35a68)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics Family (ID=0xa16)
+    Vendor:   Intel
+    VRAM:     896 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+- Completed reload, in  0.051 seconds
+desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\System.dll (this message is harmless)
+<RI> Initialized touch support.
+Initialize engine version: 5.0.1f1 (5a2e8fe35a68)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics Family (ID=0xa16)
+    Vendor:   Intel
+    VRAM:     896 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+- Completed reload, in  0.058 seconds
+desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\System.dll (this message is harmless)
+<RI> Initialized touch support.
+Initialize engine version: 5.0.1f1 (5a2e8fe35a68)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics Family (ID=0xa16)
+    Vendor:   Intel
+    VRAM:     896 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+- Completed reload, in  0.066 seconds
+desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\System.dll (this message is harmless)
+<RI> Initialized touch support.
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\matha_000\Documents\ICS168_NetworkedPoker\NetworkedPoker_Data\Managed\System.dll (this message is harmless)
+<IP>127.0.0.1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<UN>mathandcarnage
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<PW>testpassword
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+Connected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+Login
+Accepted
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+0
+mathandcarnage
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+CardsInfo
+-1
+-1
+-1
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PotInfo
+0
+0
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+ChipInfo
+100
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+0
+mathandcarnage
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+LI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 6.970762 ms
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 452.
+Total: 0.672700 ms (FindLiveObjects: 0.049180 ms CreateObjectMapping: 0.033784 ms MarkObjects: 0.582037 ms  DeleteObjects: 0.006842 ms)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+CI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PoI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+ChI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<IP>127.0.0.1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<UN>me
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<PW>drowsap
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+Connected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+1
+me
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(FilenaLe: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+ogin
+Accepted
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+0
+mathandcarnage
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+1
+me
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+CardsInfo
+-1
+-1
+-1
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PotInfo
+0
+0
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+ChipInfo
+100
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+1
+me
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+LI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 5.984592 ms
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 452.
+Total: 0.684246 ms (FindLiveObjects: 0.054739 ms CreateObjectMapping: 0.032074 ms MarkObjects: 0.589307 ms  DeleteObjects: 0.005987 ms)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+CI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PoI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+ChI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<IP>127.0.0.1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<UN>michaeland2000
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<PW>12345
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+Connected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+2
+miPhallayerInfo
+100
+New
+ P
+layerel
+and
+200
+0
+
+1
+00
+New Player!
+-1ld
+sla
+v
+e/
+unity/build/artuifacts/genurated/commdn/runtime/UnitnEngineDebug.gen.cpp Line: 56)
+
+neDebug.gen.cpp Line: 56)
+
+Login
+Accepted
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+0
+mathandcarnage
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+1
+me
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+2
+michaeland2000
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+CardsInfo
+-1
+-1
+-1
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PotInfo
+0
+0
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line:I
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+ 56)
+
+ChipInfo
+100
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+2
+michaeland2000
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+LI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 7.125146 ms
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 452.
+Total: 0.582037 ms (FindLiveObjects: 0.092800 ms CreateObjectMapping: 0.059016 ms MarkObjects: 0.403705 ms  DeleteObjects: 0.021810 ms)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+CI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PoI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+ChI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<IP>127.0.0.1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<UN>hello
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+<PW>world
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+Connected
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PPayerInfo
+3
+P
+h
+elllr
+I
+1n0
+N
+ew
+welloae
+10r
+-
+N1
+--
+
+  
+
+r!
+-n
+m1:
+
+ 
+/bilindse: e/:uniti/dslavead/niaf/btia/ge/geatratede/ermmeunctnmmo/UninnyEnginineDegggg.neecup.g in.: :p5L
+n
+e
+:
+ 56)
+
+Login
+Accepted
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+0
+mathandcarnage
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+1
+me
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+2
+michaeland2000
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+3
+hello
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+CardsInfo
+-1
+-1
+-1
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+I
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+LI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PotInfo
+0
+0
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+ChipInfo
+100
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PlayerInfo
+3
+hello
+100
+New Player!
+-1
+-1
+
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.368487 ms
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 452.
+Total: 0.515750 ms (FindLiveObjects: 0.041054 ms CreateObjectMapping: 0.022238 ms MarkObjects: 0.444332 ms  DeleteObjects: 0.007270 ms)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+CI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PoI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+ChI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+
+PI
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebug.gen.cpp Line: 56)
+

@@ -23,7 +23,13 @@ namespace NetworkedPokerServer
             public byte[] buffer = new byte[BufferSize];
             // Received data string.
             public StringBuilder sb = new StringBuilder();
+
+            public GameState myState = null;
+
+            public int myIndex = -1;
         }
+
+        static GameState game = new GameState();
 
         // Thread signal.
         public static ManualResetEvent allDone = new ManualResetEvent(false);
@@ -36,8 +42,7 @@ namespace NetworkedPokerServer
             byte[] bytes = new Byte[1024];
 
             // Establish the local endpoint for the socket.
-            IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, 11000);
 
             // Create a TCP/IP socket.
             Socket listener = new Socket(AddressFamily.InterNetwork,
@@ -101,62 +106,105 @@ namespace NetworkedPokerServer
             Socket handler = state.workSocket;
 
             // Read data from the client socket. 
-            int bytesRead = handler.EndReceive(ar);
-
-            if (bytesRead > 0)
+            try
             {
-                // There  might be more data, so store the data received so far.
-                state.sb.Append(Encoding.ASCII.GetString(
-                    state.buffer, 0, bytesRead));
+                int bytesRead = handler.EndReceive(ar);
 
-                // Check for end-of-file tag. If it is not there, read 
-                // more data.
-                content = state.sb.ToString();
-                if (content.IndexOf("<EOF>") > -1)
+                if (bytesRead > 0)
                 {
-                    // All the data has been read from the 
-                    // client. Display it on the console.
-                    Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
-                        content.Length, content);
-                    // Echo the data back to the client.
-                    if(content.StartsWith("Login"))
-                    {
-                        string[] data = content.Split('\n');
-                        string un = data[1];
-                        string pw = data[2];
+                    // There  might be more data, so store the data received so far.
+                    state.sb.Append(Encoding.ASCII.GetString(
+                        state.buffer, 0, bytesRead));
 
-                        if(database.UserIsInDatabase(un))
+                    // Check for end-of-file tag. If it is not there, read 
+                    // more data.
+                    content = state.sb.ToString();
+                    if (content.IndexOf("<EOF>") > -1)
+                    {
+                        // All the data has been read from the 
+                        // client. Display it on the console.
+                        Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
+                            content.Length, content);
+
+                        state.sb.Clear();
+
+                        if (content.StartsWith("Login"))
                         {
-                            if(database.IsCorrectPassword(un,pw))
+                            string[] data = content.Split('\n');
+                            string un = data[1];
+                            string pw = data[2];
+
+                            if (database.UserIsInDatabase(un))
                             {
-                                Console.WriteLine("Accepted");
-                                Send(handler, "Login\nAccepted<EOF>");
+                                if (database.IsCorrectPassword(un, pw))
+                                {
+                                    Console.WriteLine("Accepted");
+                                    Send(handler, "Login\nAccepted\n<EOF>");
+                                    int ix = game.Join(handler, data[1], 100);
+                                    if(ix == -1)
+                                    {
+                                        handler.Shutdown(SocketShutdown.Both);
+                                        handler.Close();
+                                    }
+                                    else
+                                    {
+                                        state.myIndex = ix;
+                                        state.myState = game;
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Rejected");
+                                    Send(handler, "Login\nRejected\n<EOF>");
+
+                                    handler.Shutdown(SocketShutdown.Both);
+                                    handler.Close();
+                                }
                             }
                             else
                             {
-                                Console.WriteLine("Rejected");
-                                Send(handler, "Login\nRejected<EOF>");
+                                database.AddNewUser(un, pw);
+                                Console.WriteLine("Created");
+                                Send(handler, "Login\nCreated\n<EOF>");
+                                int ix = game.Join(handler, data[1], 100);
+                                if (ix == -1)
+                                {
+                                    handler.Shutdown(SocketShutdown.Both);
+                                    handler.Close();
+                                }
+                                else
+                                {
+                                    state.myIndex = ix;
+                                    state.myState = game;
+                                }
                             }
                         }
-                        else
+                        else if(content.StartsWith("Fold"))
                         {
-                            database.AddNewUser(un, pw);
-                            Console.WriteLine("Created");
-                            Send(handler, "Login\nCreated<EOF>");
+
+                        }
+                        else if(content.StartsWith("Call"))
+                        {
+
+                        }
+                        else if(content.StartsWith("Raise"))
+                        {
+
                         }
                     }
-                    //Send(handler, content);
-                }
-                else
-                {
                     // Not all data received. Get more.
                     handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                     new AsyncCallback(ReadCallback), state);
+
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
         }
 
-        private static void Send(Socket handler, String data)
+        public static void Send(Socket handler, String data)
         {
             // Convert the string data to byte data using ASCII encoding.
             byte[] byteData = Encoding.ASCII.GetBytes(data);
@@ -176,9 +224,6 @@ namespace NetworkedPokerServer
                 // Complete sending the data to the remote device.
                 int bytesSent = handler.EndSend(ar);
                 Console.WriteLine("Sent {0} bytes to client.", bytesSent);
-
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
 
             }
             catch (Exception e)

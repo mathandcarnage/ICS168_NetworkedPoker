@@ -37,10 +37,6 @@ public class LoginMenuBehavior : MonoBehaviour {
 
     public void tryLogin()
     {
-        bool success = GameObject.Find("NetworkManager").GetComponent<NetworkConnection>().NewClient(un,pw,ip);
-        if(success)
-        {
-            Application.LoadLevel("GameplayScene");
-        }
+        GameObject.Find("NetworkManager").GetComponent<NetworkConnection>().NewClient(un,pw,ip);
     }
 }

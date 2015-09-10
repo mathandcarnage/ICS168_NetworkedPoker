@@ -44,6 +44,18 @@ public class Card : MonoBehaviour {
         }
 	}
 
+    public void setCard(int n)
+    {
+        if(n < 0)
+        {
+            display = false;
+            return;
+        }
+        display = true;
+        suit = n & 3;
+        value = n >> 2;
+    }
+
     string getValueString(int v)
     {
         if (v <= 8)
