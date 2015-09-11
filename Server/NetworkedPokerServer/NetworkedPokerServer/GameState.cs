@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
@@ -15,6 +16,11 @@ namespace NetworkedPokerServer
         Player[] players;
         Card[] dealtCards;
         int currentPlayer;
+        int dealer;
+        int smallBlind;
+        int numActivePlayers;
+        int numAllIn;
+        int leftoverPot;
 
         public GameState()
         {
@@ -23,13 +29,240 @@ namespace NetworkedPokerServer
             players = new Player[] { null, null, null, null };
             dealtCards = new Card[] { null, null, null, null, null };
             currentPlayer = -1;
+            dealer = -1;
+            smallBlind = 1;
+            numActivePlayers = 0;
+            numAllIn = 0;
+            leftoverPot = 0;
+        }
+
+        private int advancePlayer(int n)
+        {
+            n++;
+            if (n < 0 || n >= 4) n = 0;
+            int orig = n;
+            do
+            {
+                if (players[n] != null && !players[n].isFolded && players[n].chips > 0) return n;
+                n++;
+                if (n == 4) n = 0;
+            }
+            while (n != orig);
+            return -1;
+        }
+
+        private void advanceState()
+        {
+            if (state == 0)
+            {
+                numActivePlayers = 0;
+                numAllIn = 0;
+                deck.shuffle();
+                for (int i = 0; i < 4; i++)
+                {
+                    if (players[i] != null)
+                    {
+                        if(players[i].setUpNewGame(deck.drawNext(), deck.drawNext()))
+                        numActivePlayers++;
+                    }
+                }
+                if (numActivePlayers <= 1) return;
+                dealtCards = new Card[] { null, null, null, null, null };
+                dealer = advancePlayer(dealer);
+                players[dealer].status = "Dealer";
+                currentPlayer = advancePlayer(dealer);
+                if(players[currentPlayer].bet(smallBlind, "Small Blind", smallBlind))numAllIn++;
+                players[currentPlayer].hasActed = false;
+                currentPlayer = advancePlayer(currentPlayer);
+                if (players[currentPlayer].bet(smallBlind * 2, "Big Blind", smallBlind * 2)) numAllIn++;
+                players[currentPlayer].hasActed = false;
+                currentPlayer = advancePlayer(currentPlayer);
+                players[currentPlayer].status = "Waiting";
+                BroadcastPublicInfo();
+                SendPrivateInfo();
+                ServerSocket.Send(players[currentPlayer].mySocket, players[currentPlayer].printCall(getMaxBet()));
+                state = 1;
+            }
+            else if (state == 1)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    dealtCards[j] = deck.drawNext();
+                }
+                state = 2;
+                if(numAllIn + 1 >= numActivePlayers)
+                {
+                    advanceState();
+                    return;
+                }
+                for (int i = 0; i < 4; i++)
+                {
+                    if (players[i] != null)
+                    {
+                        players[i].setUpNewBet();
+                    }
+                }
+                currentPlayer = advancePlayer(dealer);
+                players[currentPlayer].status = "Waiting";
+                BroadcastPublicInfo();
+                SendPrivateInfo();
+                ServerSocket.Send(players[currentPlayer].mySocket, players[currentPlayer].printCall(getMaxBet()));
+            }
+            else if (state == 2)
+            {
+                state = 3;
+                dealtCards[3] = deck.drawNext();
+                if (numAllIn + 1 >= numActivePlayers)
+                {
+                    advanceState();
+                    return;
+                }
+                for (int i = 0; i < 4; i++)
+                {
+                    if (players[i] != null)
+                    {
+                        players[i].setUpNewBet();
+                    }
+                }
+                currentPlayer = advancePlayer(dealer);
+                players[currentPlayer].status = "Waiting";
+                BroadcastPublicInfo();
+                SendPrivateInfo();
+                ServerSocket.Send(players[currentPlayer].mySocket, players[currentPlayer].printCall(getMaxBet()));
+            }
+            else if (state == 3)
+            {
+                dealtCards[4] = deck.drawNext();
+                state = 4;
+                if (numAllIn + 1 >= numActivePlayers)
+                {
+                    advanceState();
+                    return;
+                }
+                for (int i = 0; i < 4; i++)
+                {
+                    if (players[i] != null)
+                    {
+                        players[i].setUpNewBet();
+                    }
+                }
+                currentPlayer = advancePlayer(dealer);
+                players[currentPlayer].status = "Waiting";
+                BroadcastPublicInfo();
+                SendPrivateInfo();
+                ServerSocket.Send(players[currentPlayer].mySocket, players[currentPlayer].printCall(getMaxBet()));
+            }
+            else if (state == 4)
+            {
+                currentPlayer = -1;
+                Hand[] bestHands = new Hand[] {null, null, null, null};
+                for (int i = 0; i < 4; i++)
+                {
+                    if (players[i] != null && !players[i].isFolded)
+                    {
+                        bestHands[i] = players[i].getBestHand(dealtCards);
+                        players[i].status = bestHands[i].print();
+                        players[i].displayCards = true;
+                    }
+                }
+                int newLeftovers = 0;
+                while(getPot() > 0)
+                {
+                    Hand bestHand = null;
+                    bool[] isBest = new bool[] { false, false, false, false };
+                    int bestCount = 0;
+                    for(int i = 0; i < 4; i ++)
+                    {
+                        if(bestHands[i] != null)
+                        {
+                            if(bestHand == null || bestHands[i].isBetter(bestHand) > 0)
+                            {
+                                bestHand = bestHands[i];
+                                isBest = new bool[] { false, false, false, false };
+                                isBest[i] = true;
+                                bestCount = 1;
+                            }
+                            else if(bestHands[i].isBetter(bestHand) == 0)
+                            {
+                                isBest[i] = true;
+                                bestCount++;
+                            }
+                        }
+                    }
+                    int lowBet = int.MaxValue;
+                    for(int i = 0; i < 4; i ++)
+                    {
+                        if(isBest[i])
+                        {
+                            lowBet = Math.Min(lowBet, players[i].inPot);
+                        }
+                    }
+                    int totalPot = leftoverPot;
+                    leftoverPot = 0;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if(players[i] != null)
+                        {
+                            totalPot += players[i].payout(lowBet);
+                        }
+                    }
+                    int finalPayout = totalPot/bestCount;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (isBest[i])
+                        {
+                            players[i].chips += finalPayout;
+                            totalPot -= finalPayout;
+                            bestHands[i] = null;
+                        }
+                    }
+                    newLeftovers += totalPot;
+                }
+                leftoverPot = newLeftovers;
+                BroadcastPublicInfo();
+                SendPrivateInfo();
+                state = 5;
+                advanceState();
+            }
+            else if (state == 5)
+            {
+                currentPlayer = -1;
+                state = 0;
+                Task.Factory.StartNew(() =>
+                {
+                    Thread.Sleep(10000);
+                    advanceState();
+                });
+            }
+        }
+
+        private void BroadcastPublicInfo()
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (players[j] != null) Broadcast(players[j].printInfo(j));
+            }
+            Broadcast(printCardsInfo());
+            Broadcast(printPotInfo());
+        }
+
+        private void SendPrivateInfo()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (players[i] != null)
+                {
+                    ServerSocket.Send(players[i].mySocket, players[i].printChips());
+                    ServerSocket.Send(players[i].mySocket, players[i].printHand());
+                }
+            }
         }
 
         private void Broadcast(string data)
         {
-            for(int i = 0; i < 4; i ++)
+            for (int i = 0; i < 4; i++)
             {
-                if(players[i] != null)
+                if (players[i] != null)
                 {
                     ServerSocket.Send(players[i].mySocket, data);
                 }
@@ -39,9 +272,9 @@ namespace NetworkedPokerServer
         private string printCardsInfo()
         {
             string res = "CardsInfo\n";
-            for (int i = 0; i < 5; i ++)
+            for (int i = 0; i < 5; i++)
             {
-                if(dealtCards[i] == null)
+                if (dealtCards[i] == null)
                 {
                     res += "-1\n";
                 }
@@ -53,51 +286,156 @@ namespace NetworkedPokerServer
             return res + "<EOF>";
         }
 
-        private string printPotInfo()
+        private int getPot()
         {
-            int pot = 0;
-            int max = 0;
-            for(int i = 0; i < 4; i ++)
+            int pot = leftoverPot;
+            for (int i = 0; i < 4; i++)
             {
                 if (players[i] != null)
                 {
-                    pot += players[i].betSoFar;
+                    pot += players[i].inPot;
+                }
+            }
+            return pot;
+        }
+
+        private int getMaxBet()
+        {
+            int max = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                if (players[i] != null)
+                {
                     max = Math.Max(max, players[i].betSoFar);
                 }
             }
-            return "PotInfo\n" + pot + "\n" + max + "\n<EOF>";
+            return max;
+        }
+
+        private string printPotInfo()
+        {
+            return "PotInfo\n" + getPot() + "\n" + getMaxBet() + "\n<EOF>";
         }
 
         public void Fold(int ix)
         {
-
+            if (ix != currentPlayer) return;
+            players[ix].isFolded = true;
+            players[ix].hasActed = true;
+            players[ix].status = "Fold";
+            players[ix].card1 = null;
+            players[ix].card2 = null;
+            numActivePlayers--;
+            if(numActivePlayers == numAllIn)
+            {
+                advanceState();
+                return;
+            }
+            currentPlayer = advancePlayer(currentPlayer);
+            players[currentPlayer].status = "Waiting";
+            if(numActivePlayers == 1)
+            {
+                players[currentPlayer].chips += getPot();
+                players[currentPlayer].status = "Winner";
+                for (int i = 0; i < 4; i++)
+                {
+                    if (players[i] != null)
+                    {
+                        players[i].inPot = 0;
+                    }
+                }
+                BroadcastPublicInfo();
+                SendPrivateInfo();
+                state = 5;
+                advanceState();
+                return;
+            }
+            else if(players[currentPlayer].hasActed &&
+                (players[currentPlayer].chips== 0 ||
+                players[currentPlayer].betSoFar == getMaxBet()))
+            {
+                advanceState();
+                return;
+            }
+            BroadcastPublicInfo();
+            SendPrivateInfo();
+            ServerSocket.Send(players[currentPlayer].mySocket, players[currentPlayer].printCall(getMaxBet()));
         }
 
         public void Call(int ix)
         {
-
+            if (ix != currentPlayer) return;
+            int amt = getMaxBet()-players[ix].betSoFar;
+            if(amt == 0)
+            {
+                players[ix].status = "Check";
+            }
+            else
+            {
+                if(players[ix].bet(amt,"Call",-1)) numAllIn++;
+            }
+            players[ix].hasActed = true;
+            if (numActivePlayers == numAllIn)
+            {
+                advanceState();
+                return;
+            }
+            currentPlayer = advancePlayer(currentPlayer);
+            players[currentPlayer].status = "Waiting";
+            if (players[currentPlayer].hasActed &&
+                (players[currentPlayer].chips == 0 ||
+                players[currentPlayer].betSoFar == getMaxBet()))
+            {
+                advanceState();
+                return;
+            }
+            BroadcastPublicInfo();
+            SendPrivateInfo();
+            ServerSocket.Send(players[currentPlayer].mySocket, players[currentPlayer].printCall(getMaxBet()));
         }
 
         public void Raise(int ix, int amt)
         {
-
+            if (ix != currentPlayer) return;
+            int bamt = getMaxBet() - players[ix].betSoFar + amt;
+            if (getMaxBet() == 0)
+            {
+                if (players[ix].bet(amt, "Bet", amt)) numAllIn++;
+            }
+            else
+            {
+                if (players[ix].bet(bamt, "Raise", amt)) numAllIn++;
+            }
+            players[ix].hasActed = true;
+            if (numActivePlayers == numAllIn)
+            {
+                advanceState();
+                return;
+            }
+            currentPlayer = advancePlayer(currentPlayer);
+            players[currentPlayer].status = "Waiting";
+            if (players[currentPlayer].hasActed &&
+                (players[currentPlayer].chips == 0 ||
+                players[currentPlayer].betSoFar == getMaxBet()))
+            {
+                advanceState();
+                return;
+            }
+            BroadcastPublicInfo();
+            SendPrivateInfo();
+            ServerSocket.Send(players[currentPlayer].mySocket, players[currentPlayer].printCall(getMaxBet()));
         }
 
         public int Join(Socket s, string n, int c)
         {
-            for(int i = 0; i < 4; i ++)
+            for (int i = 0; i < 4; i++)
             {
-                if(players[i] == null)
+                if (players[i] == null)
                 {
                     players[i] = new Player(s, n, c);
-                    for (int j = 0; j < 4; j ++)
-                    {
-                        if(players[j] != null)ServerSocket.Send(s, players[j].printInfo(j));
-                    }
-                    ServerSocket.Send(s, printCardsInfo());
-                    ServerSocket.Send(s, printPotInfo());
+                    BroadcastPublicInfo();
                     ServerSocket.Send(s, players[i].printChips());
-                    Broadcast(players[i].printInfo(i));
+                    if (state == 0) advanceState();
                     return i;
                 }
             }
@@ -117,6 +455,7 @@ namespace NetworkedPokerServer
         public bool isFolded;
         public bool hasActed;
         public int inPot;
+        public bool displayCards;
 
         public Player(Socket s, string n, int c)
         {
@@ -130,12 +469,118 @@ namespace NetworkedPokerServer
             isFolded = true;
             hasActed = false;
             inPot = 0;
+            displayCards = false;
+        }
+
+        public bool setUpNewGame(Card a, Card b)
+        {
+            inPot = 0;
+            betSoFar = 0;
+            displayCards = false;
+            if (chips == 0)
+            {
+                card1 = null;
+                card2 = null;
+                isFolded = true;
+                hasActed = true;
+                status = "Out of Chips";
+                return false;
+            }
+            isFolded = false;
+            hasActed = false;
+            card1 = a;
+            card2 = b;
+            status = string.Empty;
+            return true;
+        }
+
+        public void setUpNewBet()
+        {
+            betSoFar = 0;
+            if (isFolded || chips == 0) return;
+            hasActed = false;
+            status = string.Empty;
+        }
+
+        public bool bet(int amt, string type, int displayAmt)
+        {
+            if (amt >= chips)
+            {
+                betSoFar += chips;
+                status = "All In";
+                hasActed = true;
+                inPot += chips;
+                chips = 0;
+                return true;
+            }
+            else
+            {
+                betSoFar += amt;
+                chips -= amt;
+                status = type;
+                if (displayAmt >= 0)
+                {
+                    status += ": " + displayAmt;
+                }
+                hasActed = true;
+                inPot += amt;
+                return false;
+            }
+        }
+
+        public int payout(int n)
+        {
+            if(inPot >= n)
+            {
+                inPot -= n;
+                return n;
+            }
+            else
+            {
+                n = inPot;
+                inPot = 0;
+                return n;
+            }
+        }
+
+        public Hand getBestHand(Card[] c)
+        {
+            Hand bestHand = null;
+            Card[] allCards = new Card[7];
+            allCards[0] = card1;
+            allCards[1] = card2;
+            for(int i = 0; i < 5; i ++)
+            {
+                allCards[i + 2] = c[i];
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                for (int j = 0; j < i; j++)
+                {
+                    Card[] handCards = new Card[5];
+                    int ix = 0;
+                    for (int k = 0; k < 7; k++)
+                    {
+                        if (k != i && k != j)
+                        {
+                            handCards[ix] = allCards[k];
+                            ix++;
+                        }
+                    }
+                    Hand newHand = new Hand(handCards);
+                    if (bestHand == null || newHand.isBetter(bestHand) > 0)
+                    {
+                        bestHand = newHand;
+                    }
+                }
+            }
+            return bestHand;
         }
 
         public string printInfo(int ix)
         {
             String res = "PlayerInfo\n" + ix + "\n" + name + "\n" + chips + "\n" + status + "\n";
-            if(card1 == null)
+            if (card1 == null || !displayCards)
             {
                 res += "-1\n-1\n<EOF>";
             }
@@ -189,9 +634,9 @@ namespace NetworkedPokerServer
             currIndex = 0;
             int i = 0;
 
-            for(int s = 0; s < 4; s ++)
+            for (int s = 0; s < 4; s++)
             {
-                for(int v = 0; v < 13; v ++)
+                for (int v = 0; v < 13; v++)
                 {
                     int c = (v << 2) + s;
                     int r = rand.Next(i + 1);
@@ -541,13 +986,14 @@ namespace NetworkedPokerServer
         }
         public string print()
         {
-            string res = handType;
+            return handType;
+            /*string res = handType;
 
             for (int i = 0; i < 5; i++)
             {
                 res += " " + cards[i].print();
             }
-            return res;
+            return res;*/
         }
     }
 }

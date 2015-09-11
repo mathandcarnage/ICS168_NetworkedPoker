@@ -141,6 +141,7 @@ public class NetworkConnection : MonoBehaviour
                 {
                     GameObject.Find("Canvas").transform.FindChild("CheckCallButton").transform.FindChild("Text").GetComponent<Text>().text = "Call";
                 }
+                GameObject.Find("EventSystem").GetComponent<GameButtonManager>().enable();
             }
         }
     }

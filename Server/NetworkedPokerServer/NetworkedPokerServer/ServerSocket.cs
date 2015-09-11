@@ -181,15 +181,17 @@ namespace NetworkedPokerServer
                         }
                         else if(content.StartsWith("Fold"))
                         {
-
+                            state.myState.Fold(state.myIndex);
                         }
                         else if(content.StartsWith("Call"))
                         {
-
+                            state.myState.Call(state.myIndex);
                         }
                         else if(content.StartsWith("Raise"))
                         {
-
+                            string[] data = content.Split('\n');
+                            int amt = Convert.ToInt32(data[1]);
+                            state.myState.Raise(state.myIndex, amt);
                         }
                     }
                     // Not all data received. Get more.
