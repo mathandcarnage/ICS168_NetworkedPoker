@@ -27,9 +27,13 @@ namespace NetworkedPokerServer
             public GameState myState = null;
 
             public int myIndex = -1;
+
+            public string myName = string.Empty;
         }
 
-        static GameState game = new GameState();
+        static Dictionary<string, GameState> games = new Dictionary<string, GameState>();
+
+        static HashSet<string> connectedPlayers = new HashSet<string>();
 
         // Thread signal.
         public static ManualResetEvent allDone = new ManualResetEvent(false);
@@ -38,6 +42,15 @@ namespace NetworkedPokerServer
 
         public static void StartListening()
         {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    Console.WriteLine("My IP:" + ip.ToString());
+                }
+            }
+
             // Data buffer for incoming data.
             byte[] bytes = new Byte[1024];
 
@@ -126,7 +139,7 @@ namespace NetworkedPokerServer
                         Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
                             content.Length, content);
 
-                        state.sb.Clear();
+                        state.sb.Remove(0, content.IndexOf("<EOF>") + 5);
 
                         if (content.StartsWith("Login"))
                         {
@@ -136,21 +149,23 @@ namespace NetworkedPokerServer
 
                             if (database.UserIsInDatabase(un))
                             {
-                                if (database.IsCorrectPassword(un, pw))
+                                if(connectedPlayers.Contains(un))
+                                {
+                                    Console.WriteLine("Already Connected");
+                                    Send(handler, "Login\nAlreadyConnected\n<EOF>");
+
+                                    handler.Shutdown(SocketShutdown.Both);
+                                    handler.Close();
+                                    return;
+                                }
+                                else if (database.IsCorrectPassword(un, pw))
                                 {
                                     Console.WriteLine("Accepted");
                                     Send(handler, "Login\nAccepted\n<EOF>");
-                                    int ix = game.Join(handler, data[1], 100);
-                                    if(ix == -1)
-                                    {
-                                        handler.Shutdown(SocketShutdown.Both);
-                                        handler.Close();
-                                    }
-                                    else
-                                    {
-                                        state.myIndex = ix;
-                                        state.myState = game;
-                                    }
+                                    Send(handler, printServers());
+                                    Send(handler, "StoredChips\n" + database.getNumberOfChips(un) + "\n<EOF>");
+                                    state.myName = un;
+                                    connectedPlayers.Add(un);
                                 }
                                 else
                                 {
@@ -159,6 +174,7 @@ namespace NetworkedPokerServer
 
                                     handler.Shutdown(SocketShutdown.Both);
                                     handler.Close();
+                                    return;
                                 }
                             }
                             else
@@ -166,17 +182,90 @@ namespace NetworkedPokerServer
                                 database.AddNewUser(un, pw);
                                 Console.WriteLine("Created");
                                 Send(handler, "Login\nCreated\n<EOF>");
-                                int ix = game.Join(handler, data[1], 100);
+                                Send(handler, printServers());
+                                Send(handler, "StoredChips\n" + database.getNumberOfChips(un) + "\n<EOF>");
+                                state.myName = un;
+                                connectedPlayers.Add(un);
+                            }
+                        }
+                        else if (content.StartsWith("GetServers"))
+                        {
+                            Send(handler, printServers());
+                        }
+                        else if (content.StartsWith("AddChips"))
+                        {
+                            string[] data = content.Split('\n');
+                            int chips = database.getNumberOfChips(state.myName) + Convert.ToInt32(data[1]);
+                            database.UpdateChips(state.myName, chips);
+                            Send(handler, "StoredChips\n" + chips + "\n<EOF>");
+                        }
+                        else if(content.StartsWith("Host"))
+                        {
+                            string[] data = content.Split('\n');
+                            if (games.ContainsKey(data[1]))
+                            {
+                                Send(handler, "Join\nAlreadyExists\n<EOF>");
+                            }
+                            else
+                            {
+                                if (Convert.ToInt32(data[2]) >= 2 && Convert.ToInt32(data[2]) <= 8 && Convert.ToInt32(data[3]) % 100 == 0)
+                                {
+                                    GameState gs = new GameState(Convert.ToInt32(data[2]), Convert.ToInt32(data[3]),data[1]);
+                                    games.Add(data[1], gs);
+                                    int chips = database.getNumberOfChips(state.myName);
+                                    int ix = gs.Join(handler, state.myName, chips);
+                                    if (ix == -1)
+                                    {
+                                        if (chips < gs.buyIn)
+                                        {
+                                            Send(handler, "Join\nNotEnoughChips\n<EOF>");
+                                        }
+                                        else
+                                        {
+                                            Send(handler, "Join\nFull\n<EOF>");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        state.myIndex = ix;
+                                        state.myState = gs;
+                                        database.UpdateChips(state.myName, chips - gs.buyIn);
+                                    }
+                                }
+                                else
+                                {
+                                    Send(handler, "Join\nWrongValue\n<EOF>");
+                                }
+                            }
+                        }
+                        else if (content.StartsWith("Join"))
+                        {
+                            string[] data = content.Split('\n');
+                            if(games.ContainsKey(data[1]))
+                            {
+                                int chips = database.getNumberOfChips(state.myName);
+                                int ix = games[data[1]].Join(handler,state.myName,chips);
                                 if (ix == -1)
                                 {
-                                    handler.Shutdown(SocketShutdown.Both);
-                                    handler.Close();
+                                    if (chips < games[data[1]].buyIn)
+                                    {
+                                        Send(handler, "Join\nNotEnoughChips\n<EOF>");
+                                    }
+                                    else
+                                    {
+                                        Send(handler, "Join\nFull\n<EOF>");
+                                    }
                                 }
                                 else
                                 {
                                     state.myIndex = ix;
-                                    state.myState = game;
+                                    state.myState = games[data[1]];
+                                    database.UpdateChips(state.myName, chips - games[data[1]].buyIn);
                                 }
+                            }
+                            else
+                            {
+                                Send(handler, "Join\nNoServer\n<EOF>");
                             }
                         }
                         else if(content.StartsWith("Fold"))
@@ -193,6 +282,37 @@ namespace NetworkedPokerServer
                             int amt = Convert.ToInt32(data[1]);
                             state.myState.Raise(state.myIndex, amt);
                         }
+                        else if (content.StartsWith("Leave"))
+                        {
+                            int chips = state.myState.Leave(state.myIndex);
+                            chips += database.getNumberOfChips(state.myName);
+                            database.UpdateChips(state.myName, chips);
+                            if(state.myState.connectedPlayers <= 0)
+                            {
+                                games.Remove(state.myState.serverName);
+                            }
+                            state.myState = null;
+                            Send(handler, printServers());
+                            Send(handler, "StoredChips\n" + database.getNumberOfChips(state.myName) + "\n<EOF>");
+                        }
+                        else if (content.StartsWith("Disconnect"))
+                        {
+                            if (state.myState != null)
+                            {
+                                int chips = state.myState.Leave(state.myIndex);
+                                chips += database.getNumberOfChips(state.myName);
+                                database.UpdateChips(state.myName, chips);
+                                if (state.myState.connectedPlayers <= 0)
+                                {
+                                    games.Remove(state.myState.serverName);
+                                }
+                                state.myState = null;
+                            }
+                            connectedPlayers.Remove(state.myName);
+                            handler.Shutdown(SocketShutdown.Both);
+                            handler.Close();
+                            return;
+                        }
                     }
                     // Not all data received. Get more.
                     handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
@@ -206,6 +326,22 @@ namespace NetworkedPokerServer
             }
         }
 
+        public static string printServers()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Servers\n");
+            sb.Append(games.Count() + "\n");
+            foreach(string s in games.Keys)
+            {
+                sb.Append(s + "\n");
+                sb.Append(games[s].numPlayers + "\n");
+                sb.Append(games[s].maxPlayers + "\n");
+                sb.Append(games[s].buyIn + "\n");
+            }
+
+            return sb.ToString() + "<EOF>";
+        }
+
         public static void Send(Socket handler, String data)
         {
             // Convert the string data to byte data using ASCII encoding.
@@ -214,6 +350,7 @@ namespace NetworkedPokerServer
             // Begin sending the data to the remote device.
             handler.BeginSend(byteData, 0, byteData.Length, 0,
                 new AsyncCallback(SendCallback), handler);
+
         }
 
         private static void SendCallback(IAsyncResult ar)

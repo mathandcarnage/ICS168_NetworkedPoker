@@ -30,6 +30,13 @@ public class NetworkConnection : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             created = true;
         }
+        
+    }
+
+    void OnApplicationQuit()
+    {
+        Send("Disconnect\n<EOF>");
+        CloseClient();
     }
 
     // Use this for initialization
@@ -49,7 +56,43 @@ public class NetworkConnection : MonoBehaviour
                 Debug.Log("LI");
                 string[] data = content.Split('\n');
                 string res = data[1];
-                if (!res.Equals("Rejected"))
+                if (res.Equals("Accepted") || res.Equals("Created"))
+                {
+                    Application.LoadLevel("LobbyScene");
+                }
+            }
+            else if (content.StartsWith("Servers"))
+            {
+                string[] data = content.Split('\n');
+                int numServers = Convert.ToInt32(data[1]);
+                int j = 2;
+                string[] svrn = new string[numServers];
+                int[] cps = new int[numServers];
+                int[] mps = new int[numServers];
+                int[] bis = new int[numServers];
+                for(int i = 0; i < numServers; i ++)
+                {
+                    svrn[i] = data[j];
+                    j++;
+                    cps[i] = Convert.ToInt32(data[j]);
+                    j++;
+                    mps[i] = Convert.ToInt32(data[j]);
+                    j++;
+                    bis[i] = Convert.ToInt32(data[j]);
+                    j++;
+                }
+                GameObject.Find("EventSystem").GetComponent<LobbyMenuBehavior>().updateServers(svrn,cps,mps,bis);
+            }
+            else if (content.StartsWith("StoredChips"))
+            {
+                string[] data = content.Split('\n');
+                GameObject.Find("Canvas").transform.FindChild("ChipsAmount").GetComponent<Text>().text = data[1];
+            }
+            else if (content.StartsWith("Join"))
+            {
+                string[] data = content.Split('\n');
+                string res = data[1];
+                if (res.Equals("Success"))
                 {
                     Application.LoadLevel("GameplayScene");
                 }
@@ -59,7 +102,7 @@ public class NetworkConnection : MonoBehaviour
                 Debug.Log("PI");
                 string[] data = content.Split('\n');
                 Transform pi = GameObject.Find("Canvas").transform.FindChild("PlayerInfo" + data[1]);
-                if (pi == null) Debug.Log("oops" + data[1]);
+                pi.gameObject.SetActive(true);
                 pi.FindChild("Name").GetComponent<Text>().text = data[2];
                 pi.FindChild("Chips").GetComponent<Text>().text = data[3];
                 pi.FindChild("State").GetComponent<Text>().text = data[4];
@@ -71,6 +114,7 @@ public class NetworkConnection : MonoBehaviour
                 Debug.Log("PC");
                 string[] data = content.Split('\n');
                 Transform pi = GameObject.Find("Canvas").transform.FindChild("PlayerInfo" + data[1]);
+                pi.gameObject.SetActive(true);
                 pi.FindChild("Name").GetComponent<Text>().text = string.Empty;
                 pi.FindChild("Chips").GetComponent<Text>().text = string.Empty;
                 pi.FindChild("State").GetComponent<Text>().text = "Open Seat";
@@ -143,6 +187,10 @@ public class NetworkConnection : MonoBehaviour
                 }
                 GameObject.Find("EventSystem").GetComponent<GameButtonManager>().enable();
             }
+            else if(content.StartsWith("Kick"))
+            {
+                Application.LoadLevel("LobbyScene");
+            }
         }
     }
 
@@ -202,7 +250,7 @@ public class NetworkConnection : MonoBehaviour
         }
     }
 
-    private void CloseClient()
+    public void CloseClient()
     {
         if (client == null) return;
         try

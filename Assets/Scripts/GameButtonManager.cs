@@ -8,6 +8,10 @@ public class GameButtonManager : MonoBehaviour {
 
     void Start()
     {
+        for (int i = 0; i < 8; i ++)
+        {
+            GameObject.Find("Canvas").transform.FindChild("PlayerInfo" + i).gameObject.SetActive(false);
+        }
         disable();
     }
 
@@ -28,6 +32,12 @@ public class GameButtonManager : MonoBehaviour {
         if (raiseAmt == null || Convert.ToInt32(raiseAmt) <= 0) return;
         GameObject.Find("NetworkManager").GetComponent<NetworkConnection>().Send("Raise\n" + raiseAmt + "\n<EOF>");
         disable();
+    }
+
+    public void ExitButton()
+    {
+        GameObject.Find("NetworkManager").GetComponent<NetworkConnection>().Send("Leave\n<EOF>");
+        Application.LoadLevel("LobbyScene");
     }
 
     public void SetRaise(string i)

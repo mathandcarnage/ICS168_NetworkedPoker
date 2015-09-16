@@ -43,6 +43,22 @@ namespace NetworkedPokerServer
             return (un == username) && (pw == password);
         }
 
+        public int getNumberOfChips(string username)
+        {
+            string sql = "SELECT * FROM USER U WHERE U.name = '" + username + "'";
+            SQLiteCommand command = new SQLiteCommand(sql, SQLite_connection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            reader.Read();
+            return (int)((long)reader["chips"]);
+        }
+
+        public void UpdateChips(string username, int c)
+        {
+            string sql = "UPDATE user SET chips=" + c + " WHERE name = '" + username + "'";
+            SQLiteCommand command = new SQLiteCommand(sql, SQLite_connection);
+            command.ExecuteNonQuery();
+        }
+
         public void AddNewUser(string username, string password)
         {
             string sql = "INSERT INTO user (name, password, chips) VALUES ('" + username +"', '" + password +"', 1000);";
@@ -55,7 +71,7 @@ namespace NetworkedPokerServer
             SQLiteCommand command = new SQLiteCommand(sql, SQLite_connection);
             SQLiteDataReader reader = command.ExecuteReader();
             while (reader.Read())
-                Console.WriteLine("User: " + reader["name"] + "\tPw: " + reader["password"] + "\tGames: " + reader["games"] + "\tWins: " + reader["win"]);
+                Console.WriteLine("User: " + reader["name"] + "\tPw: " + reader["password"] + "\tChips: " + reader["chips"]);
 
         }
     }

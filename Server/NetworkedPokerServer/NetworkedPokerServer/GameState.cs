@@ -22,30 +22,40 @@ namespace NetworkedPokerServer
         int numAllIn;
         int leftoverPot;
 
-        public GameState()
+        public int numPlayers;
+        public int maxPlayers;
+        public int buyIn;
+        public int connectedPlayers;
+        public string serverName;
+
+        public GameState(int mP, int bI, string name)
         {
             state = 0;
             deck = new Deck();
-            players = new Player[] { null, null, null, null };
-            dealtCards = new Card[] { null, null, null, null, null };
+            players = new Player[mP];
+            dealtCards = new Card[5];
             currentPlayer = -1;
             dealer = -1;
-            smallBlind = 1;
+            smallBlind = bI/100;
             numActivePlayers = 0;
             numAllIn = 0;
             leftoverPot = 0;
+            maxPlayers = mP;
+            buyIn = bI;
+            numPlayers = 0;
+            serverName = name;
         }
 
         private int advancePlayer(int n)
         {
             n++;
-            if (n < 0 || n >= 4) n = 0;
+            if (n < 0 || n >= maxPlayers) n = 0;
             int orig = n;
             do
             {
                 if (players[n] != null && !players[n].isFolded && players[n].chips > 0) return n;
                 n++;
-                if (n == 4) n = 0;
+                if (n == maxPlayers) n = 0;
             }
             while (n != orig);
             return -1;
@@ -55,19 +65,42 @@ namespace NetworkedPokerServer
         {
             if (state == 0)
             {
+                for (int i = 0; i < maxPlayers; i++)
+                {
+                    if (players[i] != null && players[i].leftGame)
+                    {
+                        players[i] = null;
+                        numPlayers--;
+                    }
+                }
                 numActivePlayers = 0;
                 numAllIn = 0;
                 deck.shuffle();
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < maxPlayers; i++)
                 {
                     if (players[i] != null)
                     {
                         if(players[i].setUpNewGame(deck.drawNext(), deck.drawNext()))
-                        numActivePlayers++;
+                        {
+                            numActivePlayers++;
+                        }
+                        else
+                        {
+                            connectedPlayers--;
+                            numPlayers--;
+                            ServerSocket.Send(players[i].mySocket, "Kick\n<EOF>");
+                            ServerSocket.Send(players[i].mySocket, ServerSocket.printServers());
+                            ServerSocket.Send(players[i].mySocket, "StoredChips\n" + ServerSocket.database.getNumberOfChips(players[i].name) + "\n<EOF>");
+                            players[i] = null;
+                        }
                     }
                 }
-                if (numActivePlayers <= 1) return;
-                dealtCards = new Card[] { null, null, null, null, null };
+                if (numActivePlayers <= 1)
+                {
+                    BroadcastPublicInfo();
+                    return;
+                }
+                dealtCards = new Card[5];
                 dealer = advancePlayer(dealer);
                 players[dealer].status = "Dealer";
                 currentPlayer = advancePlayer(dealer);
@@ -95,7 +128,7 @@ namespace NetworkedPokerServer
                     advanceState();
                     return;
                 }
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < maxPlayers; i++)
                 {
                     if (players[i] != null)
                     {
@@ -117,7 +150,7 @@ namespace NetworkedPokerServer
                     advanceState();
                     return;
                 }
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < maxPlayers; i++)
                 {
                     if (players[i] != null)
                     {
@@ -139,7 +172,7 @@ namespace NetworkedPokerServer
                     advanceState();
                     return;
                 }
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < maxPlayers; i++)
                 {
                     if (players[i] != null)
                     {
@@ -155,8 +188,9 @@ namespace NetworkedPokerServer
             else if (state == 4)
             {
                 currentPlayer = -1;
-                Hand[] bestHands = new Hand[] {null, null, null, null};
-                for (int i = 0; i < 4; i++)
+                numActivePlayers = 0;
+                Hand[] bestHands = new Hand[maxPlayers];
+                for (int i = 0; i < maxPlayers; i++)
                 {
                     if (players[i] != null && !players[i].isFolded)
                     {
@@ -169,16 +203,16 @@ namespace NetworkedPokerServer
                 while(getPot() > 0)
                 {
                     Hand bestHand = null;
-                    bool[] isBest = new bool[] { false, false, false, false };
+                    bool[] isBest = new bool[maxPlayers];
                     int bestCount = 0;
-                    for(int i = 0; i < 4; i ++)
+                    for (int i = 0; i < maxPlayers; i++)
                     {
                         if(bestHands[i] != null)
                         {
                             if(bestHand == null || bestHands[i].isBetter(bestHand) > 0)
                             {
                                 bestHand = bestHands[i];
-                                isBest = new bool[] { false, false, false, false };
+                                isBest = new bool[maxPlayers];
                                 isBest[i] = true;
                                 bestCount = 1;
                             }
@@ -190,7 +224,7 @@ namespace NetworkedPokerServer
                         }
                     }
                     int lowBet = int.MaxValue;
-                    for(int i = 0; i < 4; i ++)
+                    for (int i = 0; i < maxPlayers; i++)
                     {
                         if(isBest[i])
                         {
@@ -199,7 +233,7 @@ namespace NetworkedPokerServer
                     }
                     int totalPot = leftoverPot;
                     leftoverPot = 0;
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < maxPlayers; i++)
                     {
                         if(players[i] != null)
                         {
@@ -207,7 +241,7 @@ namespace NetworkedPokerServer
                         }
                     }
                     int finalPayout = totalPot/bestCount;
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < maxPlayers; i++)
                     {
                         if (isBest[i])
                         {
@@ -238,9 +272,16 @@ namespace NetworkedPokerServer
 
         private void BroadcastPublicInfo()
         {
-            for (int j = 0; j < 4; j++)
+            for (int j = 0; j < maxPlayers; j++)
             {
-                if (players[j] != null) Broadcast(players[j].printInfo(j));
+                if (players[j] == null)
+                {
+                    Broadcast("PlayerClear\n" + j + "\n<EOF>");
+                }
+                else
+                {
+                    Broadcast(players[j].printInfo(j));
+                }
             }
             Broadcast(printCardsInfo());
             Broadcast(printPotInfo());
@@ -248,9 +289,9 @@ namespace NetworkedPokerServer
 
         private void SendPrivateInfo()
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < maxPlayers; i++)
             {
-                if (players[i] != null)
+                if (players[i] != null && !players[i].leftGame)
                 {
                     ServerSocket.Send(players[i].mySocket, players[i].printChips());
                     ServerSocket.Send(players[i].mySocket, players[i].printHand());
@@ -260,9 +301,9 @@ namespace NetworkedPokerServer
 
         private void Broadcast(string data)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < maxPlayers; i++)
             {
-                if (players[i] != null)
+                if (players[i] != null && !players[i].leftGame)
                 {
                     ServerSocket.Send(players[i].mySocket, data);
                 }
@@ -289,7 +330,7 @@ namespace NetworkedPokerServer
         private int getPot()
         {
             int pot = leftoverPot;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < maxPlayers; i++)
             {
                 if (players[i] != null)
                 {
@@ -302,7 +343,7 @@ namespace NetworkedPokerServer
         private int getMaxBet()
         {
             int max = 0;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < maxPlayers; i++)
             {
                 if (players[i] != null)
                 {
@@ -322,7 +363,7 @@ namespace NetworkedPokerServer
             if (ix != currentPlayer) return;
             players[ix].isFolded = true;
             players[ix].hasActed = true;
-            players[ix].status = "Fold";
+            if(!players[ix].leftGame)players[ix].status = "Fold";
             players[ix].card1 = null;
             players[ix].card2 = null;
             numActivePlayers--;
@@ -332,12 +373,11 @@ namespace NetworkedPokerServer
                 return;
             }
             currentPlayer = advancePlayer(currentPlayer);
-            players[currentPlayer].status = "Waiting";
             if(numActivePlayers == 1)
             {
                 players[currentPlayer].chips += getPot();
                 players[currentPlayer].status = "Winner";
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < maxPlayers; i++)
                 {
                     if (players[i] != null)
                     {
@@ -350,6 +390,11 @@ namespace NetworkedPokerServer
                 advanceState();
                 return;
             }
+            else if(players[currentPlayer].leftGame)
+            {
+                Fold(currentPlayer);
+                return;
+            }
             else if(players[currentPlayer].hasActed &&
                 (players[currentPlayer].chips== 0 ||
                 players[currentPlayer].betSoFar == getMaxBet()))
@@ -357,6 +402,7 @@ namespace NetworkedPokerServer
                 advanceState();
                 return;
             }
+            players[currentPlayer].status = "Waiting";
             BroadcastPublicInfo();
             SendPrivateInfo();
             ServerSocket.Send(players[currentPlayer].mySocket, players[currentPlayer].printCall(getMaxBet()));
@@ -381,14 +427,19 @@ namespace NetworkedPokerServer
                 return;
             }
             currentPlayer = advancePlayer(currentPlayer);
-            players[currentPlayer].status = "Waiting";
-            if (players[currentPlayer].hasActed &&
+            if (players[currentPlayer].leftGame)
+            {
+                Fold(currentPlayer);
+                return;
+            }
+            else if (players[currentPlayer].hasActed &&
                 (players[currentPlayer].chips == 0 ||
                 players[currentPlayer].betSoFar == getMaxBet()))
             {
                 advanceState();
                 return;
             }
+            players[currentPlayer].status = "Waiting";
             BroadcastPublicInfo();
             SendPrivateInfo();
             ServerSocket.Send(players[currentPlayer].mySocket, players[currentPlayer].printCall(getMaxBet()));
@@ -413,14 +464,19 @@ namespace NetworkedPokerServer
                 return;
             }
             currentPlayer = advancePlayer(currentPlayer);
-            players[currentPlayer].status = "Waiting";
-            if (players[currentPlayer].hasActed &&
+            if (players[currentPlayer].leftGame)
+            {
+                Fold(currentPlayer);
+                return;
+            }
+            else if (players[currentPlayer].hasActed &&
                 (players[currentPlayer].chips == 0 ||
                 players[currentPlayer].betSoFar == getMaxBet()))
             {
                 advanceState();
                 return;
             }
+            players[currentPlayer].status = "Waiting";
             BroadcastPublicInfo();
             SendPrivateInfo();
             ServerSocket.Send(players[currentPlayer].mySocket, players[currentPlayer].printCall(getMaxBet()));
@@ -428,11 +484,15 @@ namespace NetworkedPokerServer
 
         public int Join(Socket s, string n, int c)
         {
-            for (int i = 0; i < 4; i++)
+            if (c < buyIn) return -1;
+            for (int i = 0; i < maxPlayers; i++)
             {
                 if (players[i] == null)
                 {
-                    players[i] = new Player(s, n, c);
+                    players[i] = new Player(s, n, buyIn);
+                    numPlayers++;
+                    connectedPlayers++;
+                    ServerSocket.Send(s, "Join\nSuccess\n<EOF>");
                     BroadcastPublicInfo();
                     ServerSocket.Send(s, players[i].printChips());
                     if (state == 0) advanceState();
@@ -440,6 +500,39 @@ namespace NetworkedPokerServer
                 }
             }
             return -1;
+        }
+
+        public int Leave(int ix)
+        {
+            if (players[ix] == null) return 0;
+            connectedPlayers--;
+            players[ix].status = "Left Game";
+            players[ix].leftGame = true;
+            if (!players[ix].isFolded)
+            {
+                if (ix == currentPlayer)
+                {
+                    Fold(ix);
+                }
+                else if (numActivePlayers == 2)
+                {
+                    players[currentPlayer].chips += getPot();
+                    players[currentPlayer].status = "Winner";
+                    for (int i = 0; i < maxPlayers; i++)
+                    {
+                        if (players[i] != null)
+                        {
+                            players[i].inPot = 0;
+                        }
+                    }
+                    BroadcastPublicInfo();
+                    SendPrivateInfo();
+                    state = 5;
+                    advanceState();
+                }
+            }
+            BroadcastPublicInfo();
+            return players[ix].chips;
         }
     }
 
@@ -456,6 +549,7 @@ namespace NetworkedPokerServer
         public bool hasActed;
         public int inPot;
         public bool displayCards;
+        public bool leftGame;
 
         public Player(Socket s, string n, int c)
         {
@@ -470,6 +564,7 @@ namespace NetworkedPokerServer
             hasActed = false;
             inPot = 0;
             displayCards = false;
+            leftGame = false;
         }
 
         public bool setUpNewGame(Card a, Card b)
@@ -497,7 +592,7 @@ namespace NetworkedPokerServer
         public void setUpNewBet()
         {
             betSoFar = 0;
-            if (isFolded || chips == 0) return;
+            if (isFolded || chips == 0 || leftGame) return;
             hasActed = false;
             status = string.Empty;
         }
